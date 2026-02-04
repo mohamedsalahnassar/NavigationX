@@ -1,243 +1,343 @@
 import SwiftUI
-import UIKit
 import NavigationX
+
+// MARK: - Helper for Random Data
+
+struct RandomScreenData {
+    let color: Color
+    let index: Int
+    
+    static func generate() -> RandomScreenData {
+        let colors: [Color] = [.red, .blue, .green, .orange, .purple, .pink, .teal, .indigo, .mint, .cyan]
+        return RandomScreenData(
+            color: colors.randomElement() ?? .blue,
+            index: Int.random(in: 100...999)
+        )
+    }
+}
 
 // MARK: - SwiftUI Demo Screen
 
 struct SwiftUIDemoScreen: View {
-    @Environment(\.navigator) var navigator
     let title: String
-    let color: Color
+    let id: ScreenIdentifier?
+    @State private var color: Color = RandomScreenData.generate().color
+    @EnvironmentObject var coordinator: NavigationCoordinator
     
-    init(title: String = "SwiftUI View", color: Color? = nil) {
-        self.title = title
-        self.color = color ?? Color.random()
+    var index: Int {
+        if let id = id {
+            return (coordinator.path.firstIndex(of: id) ?? -1) + 1
+        }
+        return 0
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            if let navigator {
-                StackInspector(navigator: navigator)
-            }
+        ZStack {
+            Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
             
-            ScrollView {
-                VStack(spacing: 20) {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
                     Text(title)
                         .font(.largeTitle)
-                        .bold()
-                        .padding(.top, 40)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
                     
-                    Text("This is a native SwiftUI View")
-                        .font(.subheadline)
+                    Text("Stack Index: \(index)")
+                        .font(.headline)
                         .foregroundStyle(.secondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.ultraThinMaterial, in: Capsule())
+                }
+                .padding(.top, 40)
+// ...
+// (Rest of body is fine, except we need to match original context lines)
+// I will trick it by targeting the top part only.
+
+                
+                Spacer()
+                
+                VStack(spacing: 16) {
+                    NavigationButton(title: "Push SwiftUI", color: .blue) {
+                        coordinator.push(ScreenIdentifier(name: "Detail"))
+                    }
                     
-                    Spacer().frame(height: 20)
+                    NavigationButton(title: "Push UIKit", color: .orange) {
+                        coordinator.push(ScreenIdentifier(name: "UIKit-Screen"))
+                    }
                     
-                    if let navigator {
-                        VStack(spacing: 12) {
-                            Button(action: {
-                                navigator.push(SwiftUIDemoScreen(title: "SwiftUI #\(navigator.stackDepth + 1)"))
-                            }) {
-                                Label("Push SwiftUI View", systemImage: "swift")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.orange.gradient)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(12)
-                            }
-                            
-                            Button(action: {
-                                let vc = UIKitDemoViewController(title: "UIKit #\(navigator.stackDepth + 1)", navigator: navigator)
-                                navigator.push(vc)
-                            }) {
-                                Label("Push UIKit ViewController", systemImage: "applelogo")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue.gradient)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(12)
-                            }
-                            
-                            if navigator.stackDepth > 1 {
-                                Button(action: {
-                                    navigator.pop()
-                                }) {
-                                    Label("Pop", systemImage: "arrow.left")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(Color.red.opacity(0.1))
-                                        .foregroundColor(.red)
-                                        .cornerRadius(12)
-                                }
-                            }
-                            
-                            Button(action: {
-                                navigator.popToRoot()
-                            }) {
-                                Text("Pop to Root")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.top)
-                        }
-                        .padding(.horizontal, 30)
+                    Divider().padding(.vertical, 8)
+                    
+                    NavigationButton(title: "Pop", color: .red.opacity(0.8)) {
+                        coordinator.pop()
+                    }
+                    
+                    NavigationButton(title: "Pop to Root", color: .red) {
+                        coordinator.popToRoot()
                     }
                 }
+                .padding(24)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                )
+                .padding(.horizontal)
+                
+                Spacer()
             }
         }
-        .background(color.opacity(0.1).ignoresSafeArea())
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Image(systemName: randomIcon())
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(.primary)
+            }
+        }
+    }
+    
+    func randomIcon() -> String {
+        ["star.fill", "heart.fill", "bell.fill", "flag.fill", "bookmark.fill"].randomElement() ?? "star.fill"
     }
 }
 
-// MARK: - UIKit Demo ViewController
+struct NavigationButton: View {
+    let title: String
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(color.gradient)
+                .cornerRadius(14)
+                .shadow(color: color.opacity(0.3), radius: 5, x: 0, y: 3)
+        }
+    }
+}
 
-class UIKitDemoViewController: UIViewController {
+// MARK: - UIKit Controller for Mixed Stack
+
+class DeeplinkViewController: UIViewController {
+    let titleText: String
+    let subtitle: String
+    let index: Int
+    let color = RandomScreenData.generate().color
     
-    private let screenTitle: String
-    private let color: UIColor
-    private let navigator: Navigator? // Hold a reference if needed, or pass to wrapper
-    
-    init(title: String = "UIKit VC", color: UIColor? = nil, navigator: Navigator? = nil) {
-        self.screenTitle = title
-        self.navigator = navigator
-        self.color = color ?? .random()
+    init(title: String, subtitle: String, index: Int) {
+        self.titleText = title
+        self.subtitle = subtitle
+        self.index = index
         super.init(nibName: nil, bundle: nil)
-        self.title = title
+        self.title = "\(title)"
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = color
+        view.backgroundColor = UIColor(color).withAlphaComponent(0.1)
         
-        setupContent()
+        setupUI()
+        setupNavBar()
     }
     
-    private func setupContent() {
-        // We will host the StackInspector and Buttons using SwiftUI for consistency in this demo,
-        // but adding them as a child VC to this generic UIViewController.
+    func setupNavBar() {
+        let icons = ["tray", "archivebox", "folder", "paperplane", "doc"]
+        let randomIcon = icons.randomElement() ?? "tray"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: randomIcon),
+            style: .plain,
+            target: self,
+            action: #selector(randomAction)
+        )
         
-        // Use the generic Navigator created in the Scene/Window or rely on the fact that
-        // the SwiftUI components inside will read it from Environment if we inject it.
-        // HOWEVER, a raw UIViewController doesn't have the EnvironmentObject by default unless hosted.
+        // Add inspector internally for UIKit screens
+        addInspector()
+    }
+    
+    func addInspector() {
+        // Only if not root?
+        guard let coordinator = self.coordinator else { return }
         
-        // TRICKY PART: We need access to the `navigator` instance here to pass it to the helper view.
-        // In a real app, you might use dependency injection.
-        // For this demo, we'll find the navigator by traversing up or using a known reference.
-        // Since we don't have a global, we will rely on the fact that `navigationController` is available.
+        // Don't show if root? index 0?
+        if index == 0 { return }
         
-        let content = UIKitContentWrapper(parentVC: self, navigator: navigator!)
-        let hostingHelper = UIHostingController(rootView: content)
-        hostingHelper.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingHelper.view.backgroundColor = .clear
+        let inspectorView = StackInspector(coordinator: coordinator)
+            .padding(.bottom, 20)
+            .background(Color.clear)
         
-        addChild(hostingHelper)
-        view.addSubview(hostingHelper.view)
-        hostingHelper.didMove(toParent: self)
+        let host = UIHostingController(rootView: inspectorView)
+        host.view.backgroundColor = .clear
+        host.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(host)
+        view.addSubview(host.view)
         
         NSLayoutConstraint.activate([
-            hostingHelper.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            hostingHelper.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingHelper.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingHelper.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            host.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            host.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            host.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            host.view.heightAnchor.constraint(lessThanOrEqualToConstant: 200)
         ])
+        
+        host.didMove(toParent: self)
+    }
+    
+    @objc func randomAction() {
+        print("🔔 Random UIKit Action Tapped")
+    }
+    
+    func setupUI() {
+        // Create ScrollView
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.addSubview(stack)
+        
+        // Constraints
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor), // Will be covered by Inspector, need padding
+            
+            stack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 40),
+            stack.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -220), // Increased padding for inspector
+            stack.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+        
+        // Title
+        let titleLabel = UILabel()
+        titleLabel.text = titleText
+        titleLabel.font = .boldSystemFont(ofSize: 28)
+        
+        let subLabel = UILabel()
+        subLabel.text = subtitle
+        subLabel.font = .systemFont(ofSize: 17)
+        subLabel.textColor = .secondaryLabel
+        
+        // Index Bubble
+        let indexLabel = UILabel()
+        indexLabel.text = "Stack Index: \(index)"
+        indexLabel.font = .monospacedSystemFont(ofSize: 14, weight: .bold)
+        indexLabel.textAlignment = .center
+        indexLabel.backgroundColor = .systemFill
+        indexLabel.layer.cornerRadius = 12
+        indexLabel.layer.masksToBounds = true
+        indexLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        indexLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        // Buttons
+        let pushSwiftUIButton = createButton(title: "Push SwiftUI Screen", color: .systemBlue, action: #selector(pushSwiftUI))
+        let pushUIKitButton = createButton(title: "Push UIKit Screen", color: .systemOrange, action: #selector(pushUIKit))
+        
+        // Divider
+        let divider = UIView()
+        divider.backgroundColor = .separator
+        divider.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        divider.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        
+        let popButton = createButton(title: "Pop", color: .systemRed, action: #selector(popSelf))
+        let popRootButton = createButton(title: "Pop to Root", color: .systemRed, action: #selector(popRoot))
+        
+        [titleLabel, subLabel, indexLabel, pushSwiftUIButton, pushUIKitButton, divider, popButton, popRootButton].forEach { stack.addArrangedSubview($0) }
+    }
+    
+     func createButton(title: String, color: UIColor, action: Selector) -> UIButton {
+        var config = UIButton.Configuration.filled()
+        config.title = title
+        config.baseBackgroundColor = color
+        config.cornerStyle = .medium
+        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
+        
+        let button = UIButton(configuration: config)
+        button.addTarget(self, action: action, for: .primaryActionTriggered)
+        button.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        return button
+    }
+    
+    // MARK: - Actions
+    
+    @objc func pushSwiftUI() {
+        if let coordinator = self.coordinator {
+            coordinator.push(ScreenIdentifier(name: "Detail"), triggeredBy: "UIKit VC (Idx:\(index))")
+        } else {
+            print("❌ No coordinator on UIKit VC!")
+        }
+    }
+    
+    @objc func pushUIKit() {
+        // Imperative Push Test
+        let nextIndex = (self.navigationController?.viewControllers.count ?? 0)
+        let nextVC = DeeplinkViewController(title: "Imperative Depth", subtitle: "Pushed via native .pushViewController", index: nextIndex)
+        // CRITICAL: Propagate coordinator
+        nextVC.coordinator = self.coordinator
+        
+        self.navigationController?.pushViewController(nextVC, animated: true)
+    }
+    
+    @objc func popSelf() {
+        // We can use native pop, Swizzling should catch it.
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func popRoot() {
+        self.navigationController?.popToRootViewController(animated: true)
     }
 }
 
-// Helper to render the buttons inside the UIKit VC using existing SwiftUI styles
-struct UIKitContentWrapper: View {
-    weak var parentVC: UIViewController?
-    let navigator: Navigator
+// Helper to bridge UIColor
+
+
+// Wrapper to bridge UIKit
+struct DeeplinkViewControllerWrapper: UIViewControllerRepresentable {
+    let title: String
+    let subtitle: String
+    let id: ScreenIdentifier
+    @EnvironmentObject var coordinator: NavigationCoordinator
     
-    init(parentVC: UIViewController?, navigator: Navigator) {
-        self.parentVC = parentVC
-        self.navigator = navigator
+    func makeUIViewController(context: Context) -> UIViewController {
+        let index = (coordinator.path.firstIndex(of: id) ?? -1) + 1
+        let vc = DeeplinkViewController(title: title, subtitle: subtitle, index: index)
+        vc.coordinator = coordinator
+        return vc
     }
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            StackInspector(navigator: navigator)
-            
-            ScrollView {
-                VStack(spacing: 20) {
-                    Text(parentVC?.title ?? "UIKit")
-                        .font(.largeTitle)
-                        .bold()
-                        .padding(.top, 40)
-                    
-                    Text("This is a native UIViewController")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer().frame(height: 20)
-                    
-                    VStack(spacing: 12) {
-                        Button(action: {
-                            let nextTitle = "SwiftUI #\(navigator.stackDepth + 1)"
-                            navigator.push(SwiftUIDemoScreen(title: nextTitle))
-                        }) {
-                            Label("Push SwiftUI View", systemImage: "swift")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.orange.gradient)
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
-                        }
-                        
-                        Button(action: {
-                            let nextTitle = "UIKit #\(navigator.stackDepth + 1)"
-                            navigator.push(UIKitDemoViewController(title: nextTitle, navigator: navigator))
-                        }) {
-                            Label("Push UIKit ViewController", systemImage: "applelogo")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue.gradient)
-                                .foregroundColor(.white)
-                                .cornerRadius(12)
-                        }
-                        
-                        Button(action: {
-                            navigator.pop()
-                        }) {
-                            Label("Pop", systemImage: "arrow.left")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.red.opacity(0.1))
-                                .foregroundColor(.red)
-                                .cornerRadius(12)
-                        }
-                    }
-                    .padding(.horizontal, 30)
-                }
-            }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        // Ensure coordinator is kept up to date if view updates (though usually stable)
+        if let vc = uiViewController as? DeeplinkViewController {
+            vc.coordinator = coordinator
         }
     }
 }
 
-// MARK: - Extensions
-
-extension Color {
-    static func random() -> Color {
-        Color(
-            red: .random(in: 0.8...1),
-            green: .random(in: 0.8...1),
-            blue: .random(in: 0.8...1)
-        )
-    }
-}
-
-extension UIColor {
-    static func random() -> UIColor {
-        UIColor(
-            red: .random(in: 0.9...1),
-            green: .random(in: 0.9...1),
-            blue: .random(in: 0.9...1),
-            alpha: 1.0
-        )
+struct DeeplinkDemoView: View {
+    @EnvironmentObject var coordinator: NavigationCoordinator
+    
+    var body: some View {
+        List {
+            Section("Simulation") {
+                Button("Simulate /profile") {
+                    coordinator.push(ScreenIdentifier(name: "Profile"))
+                }
+                Button("Simulate /settings/account") {
+                    coordinator.push(ScreenIdentifier(name: "Settings"))
+                }
+            }
+        }
+        .navigationTitle("Deep Linking")
     }
 }

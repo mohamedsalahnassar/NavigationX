@@ -2,31 +2,41 @@ import SwiftUI
 import NavigationX
 
 struct StackInspector: View {
-    @ObservedObject var navigator: Navigator
+    @ObservedObject var coordinator: NavigationCoordinator
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Stack Inspector")
-                .font(.headline)
+                .font(.caption)
+                .bold()
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(navigator.viewControllers.enumerated()), id: \.element) { index, vc in
-                        StackItemView(index: index, viewController: vc, isLast: index == navigator.viewControllers.count - 1)
-                            .onTapGesture {
-                                if index < navigator.viewControllers.count - 1 {
-                                    navigator.pop(to: vc)
+            if let stacks = coordinator.navigationController?.viewControllers {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(Array(stacks.enumerated()), id: \.element) { index, vc in
+                            StackItemView(index: index, viewController: vc, isLast: index == stacks.count - 1)
+                                .onTapGesture {
+                                    if let id = vc.screenIdentifier {
+                                        coordinator.pop(to: id, triggeredBy: "Stack Inspector")
+                                    }
                                 }
-                            }
+                        }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+            } else {
+                Text("No Navigation Controller")
+                    .font(.caption)
+                    .padding()
             }
         }
-        .padding(.vertical)
-        .background(Color(.secondarySystemBackground))
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+        .cornerRadius(16, corners: [.topLeft, .topRight])
+        .shadow(color: .black.opacity(0.1), radius: 5, y: -2)
+        .frame(maxHeight: 120)
     }
 }
 
@@ -45,7 +55,7 @@ struct StackItemView: View {
                 .foregroundColor(.blue)
             
             VStack(alignment: .leading) {
-                Text(viewName)
+                Text(identifierName)
                     .font(.caption)
                     .fontWeight(.medium)
                     .fixedSize()
@@ -57,9 +67,9 @@ struct StackItemView: View {
             
             if !isLast {
                 Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .padding(.leading, 4)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .padding(.leading, 4)
             }
         }
         .padding(8)
@@ -74,11 +84,27 @@ struct StackItemView: View {
         )
     }
     
-    private var viewName: String {
-        viewController.title ?? "Untitled"
+    private var identifierName: String {
+        viewController.screenIdentifier?.name ?? "Unknown (Imperative)"
     }
     
     private var className: String {
         String(describing: type(of: viewController))
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

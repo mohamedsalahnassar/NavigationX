@@ -5,7 +5,7 @@ import NavigationX
 struct NavigationXDemoApp: App {
     init() {
         print("🚀 [App] NavigationXDemoApp.init - Installing swizzling")
-        NavigationXSwizzling.install()
+        SwizzlingManager.install()
     }
     
     var body: some Scene {

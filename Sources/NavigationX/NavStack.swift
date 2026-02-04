@@ -1,50 +1,81 @@
 import SwiftUI
-import NavigationIntrospect
+import Combine
 
-// MARK: - Bridged Navigation Stack
-
-/// A drop-in replacement for NavigationStack that provides UIKit/SwiftUI bridging
-public struct NavStack<Content: View>: View {
-    // We use a Holder to own the Navigator via StateObject so it survives,
-    // BUT we intentionally do not want NavStack to observe Navigator's changes.
-    // Accessing `navigator` inside the body of a View where `navigator` is a StateObject 
-    // implicitly subscribes the View to updates.
-    // By wrapping it in a Holder that doesn't forward changes, we break the loop.
-    @StateObject private var holder = NavigatorHolder()
-    private let content: Content
+public struct NavStack<Root: View>: View {
+    @StateObject private var coordinator = NavigationCoordinator()
+    private let root: Root
     
-    public init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-        print("🌉 [NavStack] init")
+    public init(@ViewBuilder root: () -> Root) {
+        self.root = root()
     }
     
     public var body: some View {
-        // Accessing holder is fine because Holder doesn't publish changes when Navigator does.
-        let navigator = holder.navigator
+        NavigationControllerHost(rootView: root, coordinator: coordinator)
+            .environmentObject(coordinator)
+            .edgesIgnoringSafeArea(.all)
+    }
+}
+
+// Internal Host
+struct NavigationControllerHost<Root: View>: UIViewControllerRepresentable {
+    let rootView: Root
+    let coordinator: NavigationCoordinator
+    
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let rootHost = NavigationXHostingController(rootView: rootView.environmentObject(coordinator))
+        rootHost.screenIdentifier = ScreenIdentifier(name: "ROOT", id: UUID().uuidString)
+        rootHost.coordinator = coordinator
         
-        NavigationStack {
-            content
-                .environment(\.navigator, navigator)
-                .environmentObject(navigator)
+        let nc = UINavigationController(rootViewController: rootHost)
+        nc.delegate = context.coordinator
+        
+        // Link coordinator
+        coordinator.navigationController = nc
+        
+        print("🏛️ [NavStack] Created managed UINavigationController: \(nc)")
+        return nc
+    }
+    
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+        // Trigger sync safely when SwiftUI state changes
+        // This is crucial for reactive updates if needed, though mostly Coordinator drives it.
+        // We defer to main actor to avoid view update cycle issues.
+        Task { @MainActor in
+            coordinator.sync()
         }
-        .introspectNavigationController { [weak navigator] navigationController in
-            guard let navigator else { return }
-            if navigator.navigationController !== navigationController {
-                print("🌉 [NavStack] Binding navigator to navigationController")
-                navigator.bind(to: navigationController)
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+    
+    class Coordinator: NSObject, UINavigationControllerDelegate {
+        let parent: NavigationControllerHost
+        
+        init(parent: NavigationControllerHost) {
+            self.parent = parent
+        }
+        
+        func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+            // Sync Path to Stack (Handle Native Swipe Back)
+            let stackCount = navigationController.viewControllers.count
+            let pathCount = parent.coordinator.path.count
+            
+            // Expected: Stack = Path + 1 (Root)
+            if stackCount < (pathCount + 1) {
+                print("🔙 [NCDelegate] Detected native pop. Adjusting path.")
+                let newPathCount = max(0, stackCount - 1)
+                
+                // Avoid Sync Loop by dispatching
+                DispatchQueue.main.async {
+                    if self.parent.coordinator.path.count > newPathCount {
+                        self.parent.coordinator.path = Array(self.parent.coordinator.path.prefix(newPathCount))
+                        // Also trigger update? path change triggers sync via updateUIViewController?
+                        // Yes, via StateObject change -> Body -> updateUIViewController -> sync.
+                    }
+                }
             }
-        }
-        .onAppear {
-            print("🌉 [NavStack] onAppear - installing swizzling")
-            NavigationXSwizzling.install()
         }
     }
 }
 
-// A wrapper to hold the Navigator instance.
-// It is an ObservableObject so it can be used with StateObject to maintain lifecycle,
-// but it DOES NOT emit changes when the underlying navigator changes.
-@MainActor
-private class NavigatorHolder: ObservableObject {
-    let navigator = Navigator()
-}
