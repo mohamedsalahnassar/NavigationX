@@ -7,7 +7,7 @@ NavigationX is a powerful declarative navigation library that bridges SwiftUI an
 - **Declarative Navigation**: Drive your stack with `NavStack` and a binding to `path`.
 - **UIKit Bridge**: Seamlessly push/pop `UIViewController`s alongside SwiftUI Views.
 - **Deep Linking**: Restore complex navigation states easily.
-- **Interception (Swizzling)**: Automatically captures imperative pushes from UIKit and syncs them to your declarative path.
+- **Introspection**: Access the underlying `UINavigationController` for advanced customization.
 - **Distributed Destinations**: Define destination views anywhere in your hierarchy using `.navDestination(name: ...)`.
 
 ## Usage
@@ -35,18 +35,10 @@ func navigate() {
 }
 ```
 
-### 3. Mixed Stack
-Push UIKit controllers imperatively; NavigationX automatically syncs the state.
-```swift
-// In a UIViewController
-navigationController?.pushViewController(detailsVC, animated: true)
-// coordinator.path is updated automatically!
-```
-
 ## Architecture
 
-NavigationX uses a `NavigationCoordinator` to manage the source of truth (`path: [ScreenIdentifier]`). It observes changes and synchronizes them with the underlying `UINavigationController`.
+NavigationX uses a `NavigationCoordinator` to manage the source of truth (`path: [ScreenIdentifier]`). It uses SwiftUI's native `NavigationStack(path: $path)` to drive the navigation, ensuring seamless integration and stability.
 
 - **ScreenIdentifier**: A universal ID for any screen (View or VC).
-- **Swizzling**: We intercept `UINavigationController` methods to keep the declarative path in sync with imperative actions.
+- **NavigationStack**: The core container, powered by a binding to the coordinator's path.
 - **Lazy Registry**: Destinations are registered at runtime via view modifiers, allowing for decentralized navigation logic.
