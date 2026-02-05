@@ -15,16 +15,22 @@ NavigationX is a lightweight wrapper around SwiftUI's `NavigationStack` that exp
 
 ### 1. Setup
 
-Wrap your root view in `NavigationStackX`:
+Wrap your root view in `NavigationStackX`. usage is identical to `NavigationStack`:
 
 ```swift
 import NavigationX
 
 struct ContentView: View {
+    @State private var path = NavigationPath()
+    
     var body: some View {
+        // Standard init
         NavigationStackX {
             HomeView()
         }
+        
+        // OR with path binding
+        // NavigationStackX(path: $path) { ... }
     }
 }
 ```

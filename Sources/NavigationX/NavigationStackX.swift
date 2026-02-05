@@ -35,25 +35,48 @@ public extension EnvironmentValues {
 /// ```swift
 /// @Environment(\.uiNavigationController) var nc
 /// ```
-public struct NavigationStackX<Root: View>: View {
-    private let root: Root
+public struct NavigationStackX<Data, Root: View>: View {
     @State private var navigationController: UINavigationController?
+    private let internalStack: AnyView
     
-    public init(@ViewBuilder root: () -> Root) {
-        self.root = root()
+    // MARK: - Initializers
+    
+    /// Creates a navigation stack that manages its own navigation state.
+    /// - Parameter root: The view to display in the stack.
+    @MainActor
+    public init(@ViewBuilder root: () -> Root) where Data == NavigationPath {
+        self.internalStack = AnyView(NavigationStack(root: root))
     }
     
+    /// Creates a navigation stack that binds to a navigation path.
+    /// - Parameters:
+    ///   - path: A binding to the navigation state for this stack.
+    ///   - root: The view to display in the stack.
+    @MainActor
+    public init(path: Binding<NavigationPath>, @ViewBuilder root: () -> Root) where Data == NavigationPath {
+        self.internalStack = AnyView(NavigationStack(path: path, root: root))
+    }
+    
+    /// Creates a navigation stack that binds to a collection of data.
+    /// - Parameters:
+    ///   - path: A binding to the navigation state for this stack.
+    ///   - root: The view to display in the stack.
+    @MainActor
+    public init(path: Binding<Data>, @ViewBuilder root: () -> Root) where Data : MutableCollection, Data : RandomAccessCollection, Data : RangeReplaceableCollection, Data.Element : Hashable {
+        self.internalStack = AnyView(NavigationStack(path: path, root: root))
+    }
+    
+    // MARK: - Body
+    
     public var body: some View {
-        NavigationStack {
-            root
-                .environment(\.uiNavigationController, navigationController)
-                .navigationIntrospect { nc in
-                    if self.navigationController !== nc {
-                        self.navigationController = nc
-                        // print("⚓️ [NavigationX] Captured NC")
-                    }
+        internalStack
+            .environment(\.uiNavigationController, navigationController)
+            .navigationIntrospect { nc in
+                if self.navigationController !== nc {
+                    self.navigationController = nc
+                    // print("⚓️ [NavigationX] Captured NC")
                 }
-        }
+            }
     }
 }
 
