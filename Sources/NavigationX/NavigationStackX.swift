@@ -37,7 +37,7 @@ public extension EnvironmentValues {
 /// ```
 public struct NavigationStackX<Data, Root: View>: View {
     @State private var navigationController: UINavigationController?
-    private let internalStack: AnyView
+    private let viewFactory: (Binding<UINavigationController?>) -> AnyView
     
     // MARK: - Initializers
     
@@ -45,7 +45,17 @@ public struct NavigationStackX<Data, Root: View>: View {
     /// - Parameter root: The view to display in the stack.
     @MainActor @preconcurrency
     public init(@ViewBuilder root: () -> Root) where Data == NavigationPath {
-        self.internalStack = AnyView(NavigationStack(root: root))
+        let content = root()
+        self.viewFactory = { ncBinding in
+            AnyView(
+                NavigationStack { content }
+                    .navigationIntrospect { nc in
+                        if ncBinding.wrappedValue !== nc {
+                            ncBinding.wrappedValue = nc
+                        }
+                    }
+            )
+        }
     }
     
     /// Creates a navigation stack that binds to a navigation path.
@@ -54,7 +64,17 @@ public struct NavigationStackX<Data, Root: View>: View {
     ///   - root: The view to display in the stack.
     @MainActor @preconcurrency
     public init(path: Binding<NavigationPath>, @ViewBuilder root: () -> Root) where Data == NavigationPath {
-        self.internalStack = AnyView(NavigationStack(path: path, root: root))
+        let content = root()
+        self.viewFactory = { ncBinding in
+            AnyView(
+                NavigationStack(path: path) { content }
+                    .navigationIntrospect { nc in
+                        if ncBinding.wrappedValue !== nc {
+                            ncBinding.wrappedValue = nc
+                        }
+                    }
+            )
+        }
     }
     
     /// Creates a navigation stack that binds to a collection of data.
@@ -63,20 +83,24 @@ public struct NavigationStackX<Data, Root: View>: View {
     ///   - root: The view to display in the stack.
     @MainActor @preconcurrency
     public init(path: Binding<Data>, @ViewBuilder root: () -> Root) where Data : MutableCollection, Data : RandomAccessCollection, Data : RangeReplaceableCollection, Data.Element : Hashable {
-        self.internalStack = AnyView(NavigationStack(path: path, root: root))
+        let content = root()
+        self.viewFactory = { ncBinding in
+            AnyView(
+                NavigationStack(path: path) { content }
+                    .navigationIntrospect { nc in
+                        if ncBinding.wrappedValue !== nc {
+                            ncBinding.wrappedValue = nc
+                        }
+                    }
+            )
+        }
     }
     
     // MARK: - Body
     
     public var body: some View {
-        internalStack
+        viewFactory($navigationController)
             .environment(\.uiNavigationController, navigationController)
-            .navigationIntrospect { nc in
-                if self.navigationController !== nc {
-                    self.navigationController = nc
-                    // print("⚓️ [NavigationX] Captured NC")
-                }
-            }
     }
 }
 
