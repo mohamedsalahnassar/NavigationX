@@ -43,7 +43,7 @@ public struct NavigationStackX<Data, Root: View>: View {
     
     /// Creates a navigation stack that manages its own navigation state.
     /// - Parameter root: The view to display in the stack.
-    @MainActor
+    @MainActor @preconcurrency
     public init(@ViewBuilder root: () -> Root) where Data == NavigationPath {
         self.internalStack = AnyView(NavigationStack(root: root))
     }
@@ -52,7 +52,7 @@ public struct NavigationStackX<Data, Root: View>: View {
     /// - Parameters:
     ///   - path: A binding to the navigation state for this stack.
     ///   - root: The view to display in the stack.
-    @MainActor
+    @MainActor @preconcurrency
     public init(path: Binding<NavigationPath>, @ViewBuilder root: () -> Root) where Data == NavigationPath {
         self.internalStack = AnyView(NavigationStack(path: path, root: root))
     }
@@ -61,7 +61,7 @@ public struct NavigationStackX<Data, Root: View>: View {
     /// - Parameters:
     ///   - path: A binding to the navigation state for this stack.
     ///   - root: The view to display in the stack.
-    @MainActor
+    @MainActor @preconcurrency
     public init(path: Binding<Data>, @ViewBuilder root: () -> Root) where Data : MutableCollection, Data : RandomAccessCollection, Data : RangeReplaceableCollection, Data.Element : Hashable {
         self.internalStack = AnyView(NavigationStack(path: path, root: root))
     }
@@ -80,18 +80,3 @@ public struct NavigationStackX<Data, Root: View>: View {
     }
 }
 
-// MARK: - Helper View Modifier
-
-public extension View {
-    /// A convenience modifier to access the navigation controller in a closure style.
-    /// Usage:
-    /// ```
-    /// Button("Push") { ... }
-    /// .useNavigationController { nc in
-    ///     nc.pushViewController(...)
-    /// }
-    /// ```
-    /// Note: This is less efficient than @Environment but useful for one-offs. 
-    /// Actually, a closure-based modifier is tricky because the action needs to happen inside the closure.
-    /// Better to just expose the Environment value.
-}

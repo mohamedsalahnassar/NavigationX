@@ -52,7 +52,12 @@ public extension UINavigationController {
     // MARK: - Check existence
     
     /// Checks if a SwiftUI View of a specific type exists in the stack.
+    @MainActor
     func contains<Content: View>(viewType: Content.Type) -> Bool {
-        return viewControllers.contains { $0 is UIHostingController<Content> }
+        let targetTypeName = String(describing: viewType)
+        return viewControllers.contains { vc in
+            let vcTypeString = String(describing: type(of: vc))
+            return vcTypeString.contains("UIHostingController") && vcTypeString.contains(targetTypeName)
+        }
     }
 }
