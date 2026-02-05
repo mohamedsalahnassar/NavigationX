@@ -16,10 +16,12 @@
 		6AC8135E78DBC337EFBB76EC /* NavigationX in Frameworks */ = {isa = PBXBuildFile; productRef = 26C1D480273776E2482F7CB5 /* NavigationX */; };
 		7CB3FFA10FB62DD6640A27A6 /* Navigator+Deeplink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */; };
 		DF3DD26E75DBBD5E971A4CFA /* DeeplinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */; };
+		E88C746459E44D482D469297 /* ComplexFlowScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */; };
 		FD5982D2E5E220163C3B909A /* DeeplinkNavigatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexFlowScreens.swift; sourceTree = "<group>"; };
 		175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkRouter.swift; sourceTree = "<group>"; };
 		423EE209178BFCD5757F4968 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5A23D501A5AEFE01A800F361 /* DemoScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScreens.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 		C7A8D12489FCCC5EF4A69948 /* NavigationXDemo */ = {
 			isa = PBXGroup;
 			children = (
+				13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */,
 				423EE209178BFCD5757F4968 /* ContentView.swift */,
 				B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */,
 				F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */,
@@ -150,6 +153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E88C746459E44D482D469297 /* ComplexFlowScreens.swift in Sources */,
 				276DD948FB29288E04B39D87 /* ContentView.swift in Sources */,
 				328B49B4BE629E7D6A38D31F /* DeeplinkDemoView.swift in Sources */,
 				1E1A362EC9DF8BEAA0EA1025 /* DeeplinkDestinations.swift in Sources */,

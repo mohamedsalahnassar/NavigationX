@@ -1,7 +1,7 @@
 import Foundation
 
 /// A universal identifier for any screen in the navigation stack.
-public struct ScreenIdentifier: Hashable, Identifiable, Codable {
+public struct ScreenIdentifier: Hashable, Identifiable, Codable, Sendable {
     public let id: String
     public let name: String
     

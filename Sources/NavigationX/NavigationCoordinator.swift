@@ -80,9 +80,10 @@ public class NavigationCoordinator: ObservableObject {
         let stackCount = navigationController.viewControllers.count
         let pathCount = path.count
         print("🔄 [Coordinator] Stack Check: Path=\(pathCount), UIKit=\(stackCount)")
-        
-        // Force update for Inspector
-        lastSyncId = UUID()
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(10))
+            lastSyncId = UUID()
+        }
     }
 }
 

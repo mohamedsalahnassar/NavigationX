@@ -4,28 +4,27 @@ import NavigationX
 struct ContentView: View {
     var body: some View {
         TabView {
-            // Tab A: Mixed Stack Test
+            // Tab A: Simple Demo
             NavStack {
                 InspectorOverlayWrapper {
                     SwiftUIDemoScreen(title: "Tab A Root", id: nil)
                 }
-                    .navDestination(name: "Detail") { id in
-                        InspectorOverlayWrapper {
-                            SwiftUIDemoScreen(title: "SwiftUI Detail", id: id)
-                        }
+                .navDestination(name: "Detail") { id in
+                    InspectorOverlayWrapper {
+                        SwiftUIDemoScreen(title: "SwiftUI Detail", id: id)
                     }
-                    .navDestination(name: "UIKit-Screen") { id in
-                         // Native VC will handle its own inspector
-                         DeeplinkViewControllerWrapper(title: "UIKit Screen", subtitle: "Managed by NavStack", id: id)
+                }
+                .navDestination(name: "UIKit-Screen") { id in
+                    DeeplinkViewControllerWrapper(title: "UIKit Screen", subtitle: "Managed by NavStack", id: id)
+                }
+                .navDestination(name: "Profile") { id in
+                    InspectorOverlayWrapper {
+                        Text("Profile Screen") // Minimal example
                     }
-                    .navDestination(name: "Profile") { id in
-                        InspectorOverlayWrapper {
-                             Text("Profile Screen") // Minimal example
-                        }
-                    }
+                }
             }
             .tabItem {
-                Label("Mixed Flow", systemImage: "shuffle")
+                Label("Simple Demo", systemImage: "shippingbox")
             }
             
             // Tab B: Deep Link
@@ -33,19 +32,47 @@ struct ContentView: View {
                 InspectorOverlayWrapper {
                     DeeplinkDemoView()
                 }
-                    .navDestination(name: "Profile") { id in
-                        InspectorOverlayWrapper {
-                            SwiftUIDemoScreen(title: "Profile from Deep Link", id: id)
-                        }
+                .navDestination(name: "Profile") { id in
+                    InspectorOverlayWrapper {
+                        SwiftUIDemoScreen(title: "Profile from Deep Link", id: id)
                     }
-                     .navDestination(name: "Settings") { id in
-                        InspectorOverlayWrapper {
-                            SwiftUIDemoScreen(title: "Settings from Deep Link", id: id)
-                        }
+                }
+                .navDestination(name: "Settings") { id in
+                    InspectorOverlayWrapper {
+                        SwiftUIDemoScreen(title: "Settings", id: id)
                     }
+                }
             }
             .tabItem {
                 Label("DeepLink", systemImage: "link")
+            }
+            
+            // Tab C: Shop Flow (Complex Example)
+            NavStack {
+                ShopHomeView()
+                    .navDestination(name: "ProductDetail") { id in
+                        ProductDetailView(productId: id.id)
+                    }
+                    .navDestination(name: "LoginVC") { id in
+                         // UIViewControllerRepresentable wrapper for LoginVC
+                         NavigationXViewController(title: "Login", id: id) {
+                             LoginViewController()
+                         }
+                    }
+                    .navDestination(name: "CartView") { id in
+                         CartView()
+                    }
+                    .navDestination(name: "PaymentVC") { id in
+                         NavigationXViewController(title: "Payment", id: id) {
+                             PaymentViewController()
+                         }
+                    }
+                    .navDestination(name: "OrderSuccess") { id in
+                        OrderSuccessView()
+                    }
+            }
+            .tabItem {
+                Label("Shop Flow (Complex)", systemImage: "cart.fill")
             }
         }
     }
