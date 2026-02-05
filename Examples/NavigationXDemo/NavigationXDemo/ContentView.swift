@@ -106,12 +106,6 @@ struct LiteDemoView: View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                 
-                Button("Push UIKit VC (Generic)") {
-                    let vc = LiteGenericViewController()
-                    nc.pushViewController(vc, animated: true)
-                }
-                .buttonStyle(.borderedProminent)
-                
                 Button("Push SwiftUI View (Extension)") {
                     nc.push(view: LiteDetailView(), title: "Lite Detail")
                 }

@@ -11,9 +11,11 @@ public extension UINavigationController {
     ///   - title: Optional title for the hosting controller.
     ///   - animated: Set this value to true to animate the transition.
     func push<Content: View>(view: Content, title: String? = nil, animated: Bool = true) {
-        let hostingController = UIHostingController(rootView: view)
+        // We must inject the navigation controller into the environment of the new view,
+        // otherwise the new UIHostingController starts with a fresh environment (nc = nil).
+        let viewWithEnv = view.environment(\.uiNavigationController, self)
+        let hostingController = UIHostingController(rootView: viewWithEnv)
         hostingController.title = title
-        // We can also set a referencing environment object if needed, but for Lite we keep it simple.
         self.pushViewController(hostingController, animated: animated)
     }
     
