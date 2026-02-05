@@ -126,6 +126,20 @@ struct LiteDetailView: View {
         VStack {
             Text("📄 Lite Detail View")
                 .font(.title)
+            
+            if let nc = nc {
+                Text("NC: \(String(describing: type(of: nc)))")
+                    .font(.caption2)
+                    .padding(4)
+                    .background(Color.green.opacity(0.1))
+                Text(String(format: "%p", nc))
+                    .font(.caption2)
+            } else {
+                Text("NC is NIL")
+                    .font(.headline)
+                    .foregroundColor(.red)
+            }
+            
             Text("Pushed via nc.push(view: ...)")
             
             Button("Push Another VC") {

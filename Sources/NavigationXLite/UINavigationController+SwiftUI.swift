@@ -32,17 +32,16 @@ public extension UINavigationController {
         // Actually, popToViewController usually targets the *first* instance found from the bottom? 
         // Standard behavior matches: find the VC in `viewControllers`.
         
-        print("🔍 [NavigationXLite] Searching for UIHostingController<\(String(describing: viewType))>")
+        print("🔍 [NavigationXLite] Searching for VC hosting: \(viewType)")
         for (index, vc) in viewControllers.reversed().enumerated() {
-            let vcType = type(of: vc)
-            print("   [\(index)] \(vcType)")
-            if vc is UIHostingController<Content> {
-                print("   ✅ Match found!")
+            let vcTypeString = String(describing: type(of: vc))
+            print("   [\(index)] \(vcTypeString)")
+            
+            // Check if it's a UIHostingController and contains the View type name in its generic signature.
+            // This handles ModifiedContent<View, ...> wrapping caused by environment injection.
+            if vcTypeString.contains("UIHostingController") && vcTypeString.contains(String(describing: viewType)) {
+                print("   ✅ Match found (via String check)!")
                 return self.popToViewController(vc, animated: animated)
-            }
-            // Debug introspection for generic hosting controller
-            if let hosting = vc as? UIHostingController<AnyView> {
-                 print("   ⚠️ Found UIHostingController<AnyView>, but looking for \(Content.self)")
             }
         }
         
