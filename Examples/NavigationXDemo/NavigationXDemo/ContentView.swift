@@ -107,17 +107,76 @@ struct LiteDemoView: View {
                     .cornerRadius(8)
                 
                 Button("Push UIKit VC (Generic)") {
-                    let vc = UIViewController()
-                    vc.view.backgroundColor = .systemYellow
-                    vc.title = "Generic VC"
+                    let vc = LiteGenericViewController()
                     nc.pushViewController(vc, animated: true)
                 }
                 .buttonStyle(.borderedProminent)
+                
+                Button("Push SwiftUI View (Extension)") {
+                    nc.push(view: LiteDetailView(), title: "Lite Detail")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.purple)
             } else {
                 Text("Waiting for Introspection...")
             }
         }
         .navigationTitle("Lite Demo")
+    }
+}
+
+struct LiteDetailView: View {
+    @Environment(\.uiNavigationController) var nc
+    
+    var body: some View {
+        VStack {
+            Text("📄 Lite Detail View")
+                .font(.title)
+            Text("Pushed via nc.push(view: ...)")
+            
+            Button("Push Another VC") {
+                let vc = LiteGenericViewController()
+                nc?.pushViewController(vc, animated: true)
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+}
+
+class LiteGenericViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemYellow
+        title = "Generic VC"
+        
+        let label = UILabel()
+        label.text = "UIKit VC"
+        label.font = .boldSystemFont(ofSize: 30)
+        
+        let popButton = UIButton(type: .system)
+        popButton.setTitle("Pop to Lite Detail (SwiftUI)", for: .normal)
+        popButton.addTarget(self, action: #selector(popToDetail), for: .touchUpInside)
+        
+        let stack = UIStackView(arrangedSubviews: [label, popButton])
+        stack.axis = .vertical
+        stack.spacing = 20
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stack)
+        
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    @objc func popToDetail() {
+        // Test popTo<Content: View>(viewType:)
+        // Note: accessibility to navigationController is standard
+        if let popped = navigationController?.popTo(viewType: LiteDetailView.self) {
+            print("✅ Popped to LiteDetailView: \(popped)")
+        } else {
+            print("❌ Failed to pop to LiteDetailView")
+        }
     }
 }
 
