@@ -1,5 +1,6 @@
 import SwiftUI
 import NavigationX
+import NavigationXLite
 
 struct ContentView: View {
     var body: some View {
@@ -74,7 +75,49 @@ struct ContentView: View {
             .tabItem {
                 Label("Shop Flow (Complex)", systemImage: "cart.fill")
             }
+            
+            // Tab D: Lite Demo (Direct Access)
+            NativeNavStack {
+                LiteDemoView()
+            }
+            .tabItem {
+                Label("Lite (Direct)", systemImage: "bolt.fill")
+            }
         }
+    }
+}
+
+struct LiteDemoView: View {
+    @Environment(\.uiNavigationController) var nc
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("⚡️ NavigationLite")
+                .font(.largeTitle)
+                .bold()
+            
+            Text("Captured NC: \(nc != nil ? "✅" : "❌")")
+                .foregroundColor(nc != nil ? .green : .red)
+            
+            if let nc = nc {
+                Text(String(describing: nc))
+                    .font(.caption)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+                
+                Button("Push UIKit VC (Generic)") {
+                    let vc = UIViewController()
+                    vc.view.backgroundColor = .systemYellow
+                    vc.title = "Generic VC"
+                    nc.pushViewController(vc, animated: true)
+                }
+                .buttonStyle(.borderedProminent)
+            } else {
+                Text("Waiting for Introspection...")
+            }
+        }
+        .navigationTitle("Lite Demo")
     }
 }
 

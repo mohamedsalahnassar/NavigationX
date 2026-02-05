@@ -197,7 +197,6 @@ class DeeplinkViewController: UIViewController {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
-        
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 16

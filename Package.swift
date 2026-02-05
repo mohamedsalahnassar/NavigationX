@@ -15,6 +15,10 @@ let package = Package(
         .library(
             name: "NavigationIntrospect",
             targets: ["NavigationIntrospect"]
+        ),
+        .library(
+            name: "NavigationXLite",
+            targets: ["NavigationXLite"]
         )
     ],
     targets: [
@@ -26,6 +30,13 @@ let package = Package(
         ),
         .target(
             name: "NavigationX",
+            dependencies: ["NavigationIntrospect"],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        ),
+        .target(
+            name: "NavigationXLite",
             dependencies: ["NavigationIntrospect"],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
