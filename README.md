@@ -1,44 +1,82 @@
 # NavigationX
 
-NavigationX is a powerful declarative navigation library that bridges SwiftUI and UIKit. It allows you to manage your navigation stack using a simple array of identifiers, while maintaining full compatibility with UIKit's imperative navigation (push/pop).
+**Lightweight. Hybrid. Simple.**
+
+NavigationX is a lightweight wrapper around SwiftUI's `NavigationStack` that exposes the underlying `UINavigationController` via the Environment. This enables seamless hybrid navigation scenarios (pushing generic `UIViewControllers` from SwiftUI, popping to SUI views from UIKit, etc.) without complex coordinators or swizzling.
 
 ## Features
 
-- **Declarative Navigation**: Drive your stack with `NavStack` and a binding to `path`.
-- **UIKit Bridge**: Seamlessly push/pop `UIViewController`s alongside SwiftUI Views.
-- **Deep Linking**: Restore complex navigation states easily.
-- **Introspection**: Access the underlying `UINavigationController` for advanced customization.
-- **Distributed Destinations**: Define destination views anywhere in your hierarchy using `.navDestination(name: ...)`.
+- **Direct Access**: Get the `UINavigationController` in any SwiftUI view using `@Environment(\.uiNavigationController)`.
+- **Hybrid Pushing**: Push any `UIViewController` or SwiftUI `View` from your code.
+- **Hybrid Popping**: Pop from a UIKit view controller back to a specific SwiftUI View type in the stack.
+- **Zero Config**: No `SceneDelegate` changes, no complex `Coordinator` setup.
 
 ## Usage
 
-### 1. Define Destinations
-Use `.navDestination` to register view builders for specific screen names.
+### 1. Setup
+
+Wrap your root view in `NavigationStackX`:
+
 ```swift
-NavStack {
-    VStack {
-        // ...
-    }
-    .navDestination(name: "Profile") { id in
-        ProfileView()
+import NavigationX
+
+struct ContentView: View {
+    var body: some View {
+        NavigationStackX {
+            HomeView()
+        }
     }
 }
 ```
 
-### 2. Navigate
-Inject `NavigationCoordinator` and push identifiers.
-```swift
-@EnvironmentObject var coordinator: NavigationCoordinator
+### 2. Accessing Navigation Controller
 
-func navigate() {
-    coordinator.push(ScreenIdentifier(name: "Profile"))
+```swift
+struct HomeView: View {
+    @Environment(\.uiNavigationController) var nc
+    
+    var body: some View {
+        Button("Push VC") {
+            let vc = UIViewController()
+            vc.view.backgroundColor = .red
+            nc?.pushViewController(vc, animated: true)
+        }
+    }
 }
 ```
+
+### 3. Pushing SwiftUI Views (Hybrid)
+
+Use the `push(view:)` extension to push a SwiftUI view programmatically. This ensures the environment is propagated correctly.
+
+```swift
+nc?.push(view: DetailView(), title: "Detail")
+```
+
+### 4. Popping to SwiftUI View (Hybrid)
+
+From a UIKit View Controller, you can pop back to a specific SwiftUI View type in the stack:
+
+```swift
+// Inside your UIViewController
+navigationController?.popTo(viewType: HomeView.self)
+```
+
+## Installation
+
+Add the package to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/mohamedsalahnassar/NavigationX.git", from: "1.0.0")
+]
+```
+
+## Requirements
+
+- iOS 16.0+
+- Swift 5.7+
 
 ## Architecture
 
-NavigationX uses a `NavigationCoordinator` to manage the source of truth (`path: [ScreenIdentifier]`). It uses SwiftUI's native `NavigationStack(path: $path)` to drive the navigation, ensuring seamless integration and stability.
-
-- **ScreenIdentifier**: A universal ID for any screen (View or VC).
-- **NavigationStack**: The core container, powered by a binding to the coordinator's path.
-- **Lazy Registry**: Destinations are registered at runtime via view modifiers, allowing for decentralized navigation logic.
+`NavigationX` uses `NavigationIntrospect` to locate the `UINavigationController` hosting the `NavigationStack` and injects it into the SwiftUI `Environment`. It adds no other state management or side effects.

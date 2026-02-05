@@ -1,168 +1,126 @@
 import SwiftUI
 import NavigationX
-import NavigationXLite
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            // Tab A: Simple Demo
-            NavStack {
-                InspectorOverlayWrapper {
-                    SwiftUIDemoScreen(title: "Tab A Root", id: nil)
-                }
-                .navDestination(name: "Detail") { id in
-                    InspectorOverlayWrapper {
-                        SwiftUIDemoScreen(title: "SwiftUI Detail", id: id)
-                    }
-                }
-                .navDestination(name: "UIKit-Screen") { id in
-                    DeeplinkViewControllerWrapper(title: "UIKit Screen", subtitle: "Managed by NavStack", id: id)
-                }
-                .navDestination(name: "Profile") { id in
-                    InspectorOverlayWrapper {
-                        Text("Profile Screen") // Minimal example
-                    }
-                }
-            }
-            .tabItem {
-                Label("Simple Demo", systemImage: "shippingbox")
-            }
-            
-            // Tab B: Deep Link
-            NavStack {
-                InspectorOverlayWrapper {
-                    DeeplinkDemoView()
-                }
-                .navDestination(name: "Profile") { id in
-                    InspectorOverlayWrapper {
-                        SwiftUIDemoScreen(title: "Profile from Deep Link", id: id)
-                    }
-                }
-                .navDestination(name: "Settings") { id in
-                    InspectorOverlayWrapper {
-                        SwiftUIDemoScreen(title: "Settings", id: id)
-                    }
-                }
-            }
-            .tabItem {
-                Label("DeepLink", systemImage: "link")
-            }
-            
-            // Tab C: Shop Flow (Complex Example)
-            NavStack {
-                ShopHomeView()
-                    .navDestination(name: "ProductDetail") { id in
-                        ProductDetailView(productId: id.id)
-                    }
-                    .navDestination(name: "LoginVC") { id in
-                         // UIViewControllerRepresentable wrapper for LoginVC
-                         NavigationXViewController(title: "Login", id: id) {
-                             LoginViewController()
-                         }
-                    }
-                    .navDestination(name: "CartView") { id in
-                         CartView()
-                    }
-                    .navDestination(name: "PaymentVC") { id in
-                         NavigationXViewController(title: "Payment", id: id) {
-                             PaymentViewController()
-                         }
-                    }
-                    .navDestination(name: "OrderSuccess") { id in
-                        OrderSuccessView()
-                    }
-            }
-            .tabItem {
-                Label("Shop Flow (Complex)", systemImage: "cart.fill")
-            }
-            
-            // Tab D: Lite Demo (Direct Access)
-            NativeNavStack {
-                LiteDemoView()
-            }
-            .tabItem {
-                Label("Lite (Direct)", systemImage: "bolt.fill")
-            }
+        NavigationStackX {
+            DemoHomeView()
         }
     }
 }
 
-struct LiteDemoView: View {
+// MARK: - Screens
+
+struct DemoHomeView: View {
     @Environment(\.uiNavigationController) var nc
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("⚡️ NavigationLite")
+            Image(systemName: "safari")
+                .resizable()
+                .frame(width: 80, height: 80)
+                .foregroundColor(.blue)
+            
+            Text("NavigationX")
                 .font(.largeTitle)
                 .bold()
             
-            Text("Captured NC: \(nc != nil ? "✅" : "❌")")
-                .foregroundColor(nc != nil ? .green : .red)
+            Text("Lightweight. Hybrid. Simple.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
             
+            Divider()
+                .padding(.vertical)
+            
+            // Debug Info
             if let nc = nc {
-                Text(String(describing: nc))
-                    .font(.caption)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    Text("Captured NC")
+                        .font(.caption)
+                        .bold()
+                }
+                Text(String(format: "%p", nc))
+                    .font(.caption2)
+                    .padding(5)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(5)
+            } else {
+                HStack {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.red)
+                    Text("No NC Captured")
+                }
+            }
+            
+            // Actions
+            VStack(spacing: 15) {
+                Button("Push SwiftUI View (Standard)") {
+                    // Standard NavigationLink usage is also supported by NavigationStack
+                }
+                .disabled(true)
+                .overlay(Text("Use NavLink below").font(.caption).offset(y: 20))
                 
-                Button("Push SwiftUI View (Extension)") {
-                    nc.push(view: LiteDetailView(), title: "Lite Detail")
+                NavigationLink("Standard NavigationLink", value: "Standard")
+                    .buttonStyle(.bordered)
+                
+                Button("Push SwiftUI View (via nc.push)") {
+                    nc?.push(view: DetailView(), title: "Detail View")
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.purple)
-            } else {
-                Text("Waiting for Introspection...")
             }
         }
-        .navigationTitle("Lite Demo")
+        .navigationDestination(for: String.self) { val in
+            Text("Standard Destination: \(val)")
+        }
+        .navigationTitle("Home")
     }
 }
 
-struct LiteDetailView: View {
+struct DetailView: View {
     @Environment(\.uiNavigationController) var nc
     
     var body: some View {
-        VStack {
-            Text("📄 Lite Detail View")
+        VStack(spacing: 20) {
+            Text("📄 Detail View")
                 .font(.title)
             
             if let nc = nc {
-                Text("NC: \(String(describing: type(of: nc)))")
+                Text(String(format: "NC: %p", nc))
                     .font(.caption2)
                     .padding(4)
                     .background(Color.green.opacity(0.1))
-                Text(String(format: "%p", nc))
-                    .font(.caption2)
-            } else {
-                Text("NC is NIL")
-                    .font(.headline)
-                    .foregroundColor(.red)
             }
             
-            Text("Pushed via nc.push(view: ...)")
+            Text("This view was pushed via `nc.push`.")
             
-            Button("Push Another VC") {
-                let vc = LiteGenericViewController()
+            Button("Push generic UIViewController") {
+                let vc = GenericViewController()
                 nc?.pushViewController(vc, animated: true)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
+            .tint(.orange)
         }
     }
 }
 
-class LiteGenericViewController: UIViewController {
+class GenericViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemYellow
+        view.backgroundColor = .systemGroupedBackground
         title = "Generic VC"
         
         let label = UILabel()
-        label.text = "UIKit VC"
-        label.font = .boldSystemFont(ofSize: 30)
+        label.text = "UIKit View Controller"
+        label.font = .boldSystemFont(ofSize: 24)
         
         let popButton = UIButton(type: .system)
-        popButton.setTitle("Pop to Lite Detail (SwiftUI)", for: .normal)
+        popButton.setTitle("Pop to DetailView (SwiftUI)", for: .normal)
+        popButton.setTitleColor(.white, for: .normal)
+        popButton.backgroundColor = .systemBlue
+        popButton.layer.cornerRadius = 10
+        popButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         popButton.addTarget(self, action: #selector(popToDetail), for: .touchUpInside)
         
         let stack = UIStackView(arrangedSubviews: [label, popButton])
@@ -179,52 +137,12 @@ class LiteGenericViewController: UIViewController {
     
     @objc func popToDetail() {
         // Test popTo<Content: View>(viewType:)
-        // Note: accessibility to navigationController is standard
-        if let popped = navigationController?.popTo(viewType: LiteDetailView.self) {
-            print("✅ Popped to LiteDetailView: \(popped)")
+        if let popped = navigationController?.popTo(viewType: DetailView.self) {
+            print("✅ Popped to DetailView: \(popped)")
         } else {
-            print("❌ Failed to pop to LiteDetailView")
-        }
-    }
-}
-
-struct CustomNavLink<Label: View>: View {
-    let id: ScreenIdentifier
-    let label: () -> Label
-    @EnvironmentObject var coordinator: NavigationCoordinator
-    
-    var body: some View {
-        Button(action: {
-            print("🔘 [CustomNavLink] Tapped \(id.name)")
-            coordinator.push(id)
-        }) {
-            label()
-        }
-    }
-}
-
-
-
-import SwiftUI
-import NavigationX
-
-struct InspectorOverlayWrapper<Content: View>: View {
-    let content: Content
-    @EnvironmentObject var coordinator: NavigationCoordinator
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            content
-            
-            // Only show if NOT root (index > 0)
-            if !coordinator.path.isEmpty {
-                StackInspector(coordinator: coordinator)
-                    .padding(.bottom, 50) // Lift above tab bar slightly
-            }
+            print("❌ Failed to pop to DetailView")
+            // Fallback
+            navigationController?.popViewController(animated: true)
         }
     }
 }

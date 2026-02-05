@@ -18,8 +18,6 @@ targets:
     dependencies:
       - package: NavigationX
         product: NavigationX
-      - package: NavigationX
-        product: NavigationXLite
     settings:
       base:
         SWIFT_VERSION: "6.0"

@@ -32,7 +32,7 @@ public extension UINavigationController {
         // Actually, popToViewController usually targets the *first* instance found from the bottom? 
         // Standard behavior matches: find the VC in `viewControllers`.
         
-        print("🔍 [NavigationXLite] Searching for VC hosting: \(viewType)")
+        print("🔍 [NavigationX] Searching for VC hosting: \(viewType)")
         for (index, vc) in viewControllers.reversed().enumerated() {
             let vcTypeString = String(describing: type(of: vc))
             print("   [\(index)] \(vcTypeString)")
@@ -45,7 +45,7 @@ public extension UINavigationController {
             }
         }
         
-        print("⚠️ [NavigationXLite] popTo failed: No hosting controller found for type \(String(describing: viewType))")
+        print("⚠️ [NavigationX] popTo failed: No hosting controller found for type \(String(describing: viewType))")
         return nil
     }
     

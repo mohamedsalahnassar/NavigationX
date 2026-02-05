@@ -7,28 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1821A38ED9973A0F1AB96A65 /* DemoScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A23D501A5AEFE01A800F361 /* DemoScreens.swift */; };
 		1A96276B714395533B228FB1 /* NavigationBridgeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */; };
 		1E1A362EC9DF8BEAA0EA1025 /* DeeplinkDestinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */; };
 		276DD948FB29288E04B39D87 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EE209178BFCD5757F4968 /* ContentView.swift */; };
 		328B49B4BE629E7D6A38D31F /* DeeplinkDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */; };
-		5366EDF0E34D9BD4FE12176F /* StackInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7527087B76184839C7C27C /* StackInspector.swift */; };
-		5A859923739C884502D5CA6B /* NavigationXLite in Frameworks */ = {isa = PBXBuildFile; productRef = FAF5F2107E2C761D43731D99 /* NavigationXLite */; };
 		6AC8135E78DBC337EFBB76EC /* NavigationX in Frameworks */ = {isa = PBXBuildFile; productRef = 26C1D480273776E2482F7CB5 /* NavigationX */; };
 		7CB3FFA10FB62DD6640A27A6 /* Navigator+Deeplink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */; };
 		DF3DD26E75DBBD5E971A4CFA /* DeeplinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */; };
-		E88C746459E44D482D469297 /* ComplexFlowScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */; };
 		FD5982D2E5E220163C3B909A /* DeeplinkNavigatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexFlowScreens.swift; sourceTree = "<group>"; };
 		175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkRouter.swift; sourceTree = "<group>"; };
 		423EE209178BFCD5757F4968 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		5A23D501A5AEFE01A800F361 /* DemoScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScreens.swift; sourceTree = "<group>"; };
 		5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Navigator+Deeplink.swift"; sourceTree = "<group>"; };
 		694EA1A96D3483B846FE2ED5 /* NavigationXDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NavigationXDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7A7527087B76184839C7C27C /* StackInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackInspector.swift; sourceTree = "<group>"; };
 		A5E863B70C6450C1306223D3 /* NavigationBridge */ = {isa = PBXFileReference; lastKnownFileType = folder; name = NavigationBridge; path = ../..; sourceTree = SOURCE_ROOT; };
 		B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkDemoView.swift; sourceTree = "<group>"; };
 		C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBridgeDemoApp.swift; sourceTree = "<group>"; };
@@ -42,7 +35,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6AC8135E78DBC337EFBB76EC /* NavigationX in Frameworks */,
-				5A859923739C884502D5CA6B /* NavigationXLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,16 +52,13 @@
 		C7A8D12489FCCC5EF4A69948 /* NavigationXDemo */ = {
 			isa = PBXGroup;
 			children = (
-				13205A2CE9AE1FC439D0314D /* ComplexFlowScreens.swift */,
 				423EE209178BFCD5757F4968 /* ContentView.swift */,
 				B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */,
 				F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */,
 				FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */,
 				175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */,
-				5A23D501A5AEFE01A800F361 /* DemoScreens.swift */,
 				C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */,
 				5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */,
-				7A7527087B76184839C7C27C /* StackInspector.swift */,
 			);
 			path = NavigationXDemo;
 			sourceTree = "<group>";
@@ -108,7 +97,6 @@
 			name = NavigationXDemo;
 			packageProductDependencies = (
 				26C1D480273776E2482F7CB5 /* NavigationX */,
-				FAF5F2107E2C761D43731D99 /* NavigationXLite */,
 			);
 			productName = NavigationXDemo;
 			productReference = 694EA1A96D3483B846FE2ED5 /* NavigationXDemo.app */;
@@ -156,16 +144,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E88C746459E44D482D469297 /* ComplexFlowScreens.swift in Sources */,
 				276DD948FB29288E04B39D87 /* ContentView.swift in Sources */,
 				328B49B4BE629E7D6A38D31F /* DeeplinkDemoView.swift in Sources */,
 				1E1A362EC9DF8BEAA0EA1025 /* DeeplinkDestinations.swift in Sources */,
 				FD5982D2E5E220163C3B909A /* DeeplinkNavigatable.swift in Sources */,
 				DF3DD26E75DBBD5E971A4CFA /* DeeplinkRouter.swift in Sources */,
-				1821A38ED9973A0F1AB96A65 /* DemoScreens.swift in Sources */,
 				1A96276B714395533B228FB1 /* NavigationBridgeDemoApp.swift in Sources */,
 				7CB3FFA10FB62DD6640A27A6 /* Navigator+Deeplink.swift in Sources */,
-				5366EDF0E34D9BD4FE12176F /* StackInspector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,10 +358,6 @@
 		26C1D480273776E2482F7CB5 /* NavigationX */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NavigationX;
-		};
-		FAF5F2107E2C761D43731D99 /* NavigationXLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NavigationXLite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -16,11 +16,26 @@ public extension EnvironmentValues {
     }
 }
 
-// MARK: - NativeNavStack
+// MARK: - NavigationStackX
 
-/// A lightweight wrapper around NavigationStack that checks for the underlying UINavigationController
-/// and injects it into the environment for child views to use.
-public struct NativeNavStack<Root: View>: View {
+/// A lightweight wrapper around `NavigationStack` that exposes the underlying `UINavigationController`.
+///
+/// Use `NavigationStackX` to enable hybrid navigation scenarios where you need direct access
+/// to the UIKit navigation controller from within your SwiftUI views.
+///
+/// **Usage:**
+/// ```swift
+/// NavigationStackX {
+///     MyView()
+/// }
+/// ```
+///
+/// **Accessing the Navigation Controller:**
+/// Inside your view:
+/// ```swift
+/// @Environment(\.uiNavigationController) var nc
+/// ```
+public struct NavigationStackX<Root: View>: View {
     private let root: Root
     @State private var navigationController: UINavigationController?
     
@@ -35,7 +50,7 @@ public struct NativeNavStack<Root: View>: View {
                 .navigationIntrospect { nc in
                     if self.navigationController !== nc {
                         self.navigationController = nc
-                        print("⚓️ [NavigationXLite] Captured NC: \(nc)")
+                        // print("⚓️ [NavigationX] Captured NC")
                     }
                 }
         }

@@ -3,10 +3,7 @@ import NavigationX
 
 @main
 struct NavigationXDemoApp: App {
-    init() {
-        print("🚀 [App] NavigationXDemoApp.init - Swizzling DISABLED for NavigationStack compatibility")
-        // SwizzlingManager.install()
-    }
+    // No setup needed for NavigationX (Lite)
     
     var body: some Scene {
         WindowGroup {
