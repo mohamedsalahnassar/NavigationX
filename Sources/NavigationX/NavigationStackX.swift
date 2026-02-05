@@ -48,12 +48,15 @@ public struct NavigationStackX<Data, Root: View>: View {
         let content = root()
         self.viewFactory = { ncBinding in
             AnyView(
-                NavigationStack { content }
-                    .navigationIntrospect { nc in
-                        if ncBinding.wrappedValue !== nc {
-                            ncBinding.wrappedValue = nc
+                NavigationStack {
+                    content
+                        .environment(\.uiNavigationController, ncBinding.wrappedValue)
+                        .navigationIntrospect { nc in
+                            if ncBinding.wrappedValue !== nc {
+                                ncBinding.wrappedValue = nc
+                            }
                         }
-                    }
+                }
             )
         }
     }
@@ -67,12 +70,15 @@ public struct NavigationStackX<Data, Root: View>: View {
         let content = root()
         self.viewFactory = { ncBinding in
             AnyView(
-                NavigationStack(path: path) { content }
-                    .navigationIntrospect { nc in
-                        if ncBinding.wrappedValue !== nc {
-                            ncBinding.wrappedValue = nc
+                NavigationStack(path: path) {
+                    content
+                        .environment(\.uiNavigationController, ncBinding.wrappedValue)
+                        .navigationIntrospect { nc in
+                            if ncBinding.wrappedValue !== nc {
+                                ncBinding.wrappedValue = nc
+                            }
                         }
-                    }
+                }
             )
         }
     }
@@ -86,12 +92,15 @@ public struct NavigationStackX<Data, Root: View>: View {
         let content = root()
         self.viewFactory = { ncBinding in
             AnyView(
-                NavigationStack(path: path) { content }
-                    .navigationIntrospect { nc in
-                        if ncBinding.wrappedValue !== nc {
-                            ncBinding.wrappedValue = nc
+                NavigationStack(path: path) {
+                    content
+                        .environment(\.uiNavigationController, ncBinding.wrappedValue)
+                        .navigationIntrospect { nc in
+                            if ncBinding.wrappedValue !== nc {
+                                ncBinding.wrappedValue = nc
+                            }
                         }
-                    }
+                }
             )
         }
     }
@@ -100,7 +109,6 @@ public struct NavigationStackX<Data, Root: View>: View {
     
     public var body: some View {
         viewFactory($navigationController)
-            .environment(\.uiNavigationController, navigationController)
     }
 }
 
