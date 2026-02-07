@@ -7,44 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F8448AC88117054276CD6A7 /* BaseNavigableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7572D549F8212B52B4CABC /* BaseNavigableView.swift */; };
-		1A96276B714395533B228FB1 /* NavigationBridgeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */; };
-		1E1A362EC9DF8BEAA0EA1025 /* DeeplinkDestinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */; };
-		276DD948FB29288E04B39D87 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EE209178BFCD5757F4968 /* ContentView.swift */; };
-		328B49B4BE629E7D6A38D31F /* DeeplinkDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */; };
-		3F0E2F6995608C9A89FEF762 /* ProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5818203D9BB580DA066F71BB /* ProfileScreen.swift */; };
-		5A3D6CBD95B5561158E46AC0 /* AccountVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA83F9D837E35714AA10CC3 /* AccountVC.swift */; };
 		6AC8135E78DBC337EFBB76EC /* NavigationX in Frameworks */ = {isa = PBXBuildFile; productRef = 26C1D480273776E2482F7CB5 /* NavigationX */; };
-		7CB3FFA10FB62DD6640A27A6 /* Navigator+Deeplink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */; };
-		81CE1452ACF4D047EBD84483 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC999FE8586D48C031C8954 /* HomeScreen.swift */; };
-		8FE3919C58CA4A05BD9B59E8 /* BaseNavigableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E2203F6A12DE0766D5768 /* BaseNavigableViewController.swift */; };
-		A2AF81B8B2DDD6BF530C203C /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E281B4B908EAD13D2087EE /* SettingsScreen.swift */; };
-		C8892A78D37340C104DB2D00 /* DashboardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A4B698553EDFD387B18977 /* DashboardVC.swift */; };
-		D2FFE61784F21E093F7D6955 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E19617D6183F4C9753A3418 /* Theme.swift */; };
-		D4D653B99CA49341FFE5857D /* MessagesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EEA1A938DC620C3D0543C6 /* MessagesVC.swift */; };
-		DF3DD26E75DBBD5E971A4CFA /* DeeplinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */; };
-		FD5982D2E5E220163C3B909A /* DeeplinkNavigatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */; };
+		6FA097777F9F91A251A6AA49 /* BaseSwiftUIScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12EC94CC37809939BB59D3B /* BaseSwiftUIScreen.swift */; };
+		9B36D1BB18522B1051AE0A5B /* NavigationXDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04FBE1873F478E35849F3C0 /* NavigationXDemoApp.swift */; };
+		D7E2FAAF0F2255D1B7CF2F96 /* StackInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2048778FFCA5DE0D8E40013B /* StackInspectorView.swift */; };
+		EB35BD80E8AA636564EB1264 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C248B7D72EC8189CADA300C9 /* BaseViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E19617D6183F4C9753A3418 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkRouter.swift; sourceTree = "<group>"; };
-		2BA83F9D837E35714AA10CC3 /* AccountVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVC.swift; sourceTree = "<group>"; };
-		423EE209178BFCD5757F4968 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		5818203D9BB580DA066F71BB /* ProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen.swift; sourceTree = "<group>"; };
-		5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Navigator+Deeplink.swift"; sourceTree = "<group>"; };
+		2048778FFCA5DE0D8E40013B /* StackInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackInspectorView.swift; sourceTree = "<group>"; };
 		694EA1A96D3483B846FE2ED5 /* NavigationXDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NavigationXDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		94EEA1A938DC620C3D0543C6 /* MessagesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesVC.swift; sourceTree = "<group>"; };
 		A5E863B70C6450C1306223D3 /* NavigationBridge */ = {isa = PBXFileReference; lastKnownFileType = folder; name = NavigationBridge; path = ../..; sourceTree = SOURCE_ROOT; };
-		A6A4B698553EDFD387B18977 /* DashboardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardVC.swift; sourceTree = "<group>"; };
-		ABC999FE8586D48C031C8954 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
-		B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkDemoView.swift; sourceTree = "<group>"; };
-		C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBridgeDemoApp.swift; sourceTree = "<group>"; };
-		CE7572D549F8212B52B4CABC /* BaseNavigableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigableView.swift; sourceTree = "<group>"; };
-		DC9E2203F6A12DE0766D5768 /* BaseNavigableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigableViewController.swift; sourceTree = "<group>"; };
-		E5E281B4B908EAD13D2087EE /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
-		F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkDestinations.swift; sourceTree = "<group>"; };
-		FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkNavigatable.swift; sourceTree = "<group>"; };
+		B12EC94CC37809939BB59D3B /* BaseSwiftUIScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSwiftUIScreen.swift; sourceTree = "<group>"; };
+		C248B7D72EC8189CADA300C9 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		F04FBE1873F478E35849F3C0 /* NavigationXDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationXDemoApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,9 +55,7 @@
 		A7E1C48ADEE645713B004152 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				ABC999FE8586D48C031C8954 /* HomeScreen.swift */,
-				5818203D9BB580DA066F71BB /* ProfileScreen.swift */,
-				E5E281B4B908EAD13D2087EE /* SettingsScreen.swift */,
+				B12EC94CC37809939BB59D3B /* BaseSwiftUIScreen.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -89,16 +63,8 @@
 		C7A8D12489FCCC5EF4A69948 /* NavigationXDemo */ = {
 			isa = PBXGroup;
 			children = (
-				CE7572D549F8212B52B4CABC /* BaseNavigableView.swift */,
-				DC9E2203F6A12DE0766D5768 /* BaseNavigableViewController.swift */,
-				423EE209178BFCD5757F4968 /* ContentView.swift */,
-				B76A53B1FEEE1FE576941613 /* DeeplinkDemoView.swift */,
-				F34A13A62603E584B7524EE6 /* DeeplinkDestinations.swift */,
-				FBE28960522F1016A23ECDF2 /* DeeplinkNavigatable.swift */,
-				175408AFD93FB63BAD26831F /* DeeplinkRouter.swift */,
-				C86720489721F2941BE70014 /* NavigationBridgeDemoApp.swift */,
-				5F8ECC784F551FCCC0028AB9 /* Navigator+Deeplink.swift */,
-				0E19617D6183F4C9753A3418 /* Theme.swift */,
+				F04FBE1873F478E35849F3C0 /* NavigationXDemoApp.swift */,
+				2048778FFCA5DE0D8E40013B /* StackInspectorView.swift */,
 				656E64E919BE0F906F741C79 /* Screens */,
 			);
 			path = NavigationXDemo;
@@ -124,9 +90,7 @@
 		F4602CD7ABC4E8FCC2137154 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
-				2BA83F9D837E35714AA10CC3 /* AccountVC.swift */,
-				A6A4B698553EDFD387B18977 /* DashboardVC.swift */,
-				94EEA1A938DC620C3D0543C6 /* MessagesVC.swift */,
+				C248B7D72EC8189CADA300C9 /* BaseViewController.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -195,22 +159,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A3D6CBD95B5561158E46AC0 /* AccountVC.swift in Sources */,
-				0F8448AC88117054276CD6A7 /* BaseNavigableView.swift in Sources */,
-				8FE3919C58CA4A05BD9B59E8 /* BaseNavigableViewController.swift in Sources */,
-				276DD948FB29288E04B39D87 /* ContentView.swift in Sources */,
-				C8892A78D37340C104DB2D00 /* DashboardVC.swift in Sources */,
-				328B49B4BE629E7D6A38D31F /* DeeplinkDemoView.swift in Sources */,
-				1E1A362EC9DF8BEAA0EA1025 /* DeeplinkDestinations.swift in Sources */,
-				FD5982D2E5E220163C3B909A /* DeeplinkNavigatable.swift in Sources */,
-				DF3DD26E75DBBD5E971A4CFA /* DeeplinkRouter.swift in Sources */,
-				81CE1452ACF4D047EBD84483 /* HomeScreen.swift in Sources */,
-				D4D653B99CA49341FFE5857D /* MessagesVC.swift in Sources */,
-				1A96276B714395533B228FB1 /* NavigationBridgeDemoApp.swift in Sources */,
-				7CB3FFA10FB62DD6640A27A6 /* Navigator+Deeplink.swift in Sources */,
-				3F0E2F6995608C9A89FEF762 /* ProfileScreen.swift in Sources */,
-				A2AF81B8B2DDD6BF530C203C /* SettingsScreen.swift in Sources */,
-				D2FFE61784F21E093F7D6955 /* Theme.swift in Sources */,
+				6FA097777F9F91A251A6AA49 /* BaseSwiftUIScreen.swift in Sources */,
+				EB35BD80E8AA636564EB1264 /* BaseViewController.swift in Sources */,
+				9B36D1BB18522B1051AE0A5B /* NavigationXDemoApp.swift in Sources */,
+				D7E2FAAF0F2255D1B7CF2F96 /* StackInspectorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
