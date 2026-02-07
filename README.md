@@ -1,76 +1,47 @@
-# NavigationX
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-iOS%2016+-blue?style=for-the-badge&logo=apple" alt="Platform">
+  <img src="https://img.shields.io/badge/Swift-6.2-orange?style=for-the-badge&logo=swift" alt="Swift">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+</p>
 
-**Lightweight. Hybrid. Simple.**
+<h1 align="center">🧭 NavigationX</h1>
 
-NavigationX is a lightweight wrapper around SwiftUI's `NavigationStack` that exposes the underlying `UINavigationController` via the Environment. This enables seamless hybrid navigation scenarios (pushing generic `UIViewControllers` from SwiftUI, popping to SUI views from UIKit, etc.) without complex coordinators or swizzling.
+<p align="center">
+  <strong>Seamless hybrid navigation for SwiftUI + UIKit</strong><br>
+  <em>One line. Zero coordinators. Full control.</em>
+</p>
 
-## Features
+---
 
-- **Direct Access**: Get the `UINavigationController` in any SwiftUI view using `@Environment(\.uiNavigationController)`.
-- **Hybrid Pushing**: Push any `UIViewController` or SwiftUI `View` from your code.
-- **Hybrid Popping**: Pop from a UIKit view controller back to a specific SwiftUI View type in the stack.
-- **Zero Config**: No `SceneDelegate` changes, no complex `Coordinator` setup.
+## ✨ Why NavigationX?
 
-## Usage
+SwiftUI's `NavigationStack` is great, but sometimes you need the raw power of `UINavigationController`:
 
-### 1. Setup
-
-Wrap your root view in `NavigationStackX`. usage is identical to `NavigationStack`:
-
-```swift
-import NavigationX
-
-struct ContentView: View {
-    @State private var path = NavigationPath()
-    
-    var body: some View {
-        // Standard init
-        NavigationStackX {
-            HomeView()
-        }
-        
-        // OR with path binding
-        // NavigationStackX(path: $path) { ... }
-    }
-}
-```
-
-### 2. Accessing Navigation Controller
+- 🔄 **Hybrid Apps** — Push UIKit view controllers from SwiftUI
+- 🎯 **Precise Control** — Pop to specific views, inspect the stack
+- ⚡ **Async Navigation** — Use `await` with push/pop animations
+- 🧵 **Swift 6 Ready** — Full concurrency support with `@Observable`
 
 ```swift
-struct HomeView: View {
-    @Environment(\.uiNavigationController) var nc
-    
-    var body: some View {
-        Button("Push VC") {
-            let vc = UIViewController()
-            vc.view.backgroundColor = .red
-            nc?.pushViewController(vc, animated: true)
-        }
-    }
-}
+// Access UINavigationController from any SwiftUI view
+@Environment(\.uiNavigationController) var nc
+
+// Push anything
+nc?.push(view: DetailView())           // SwiftUI view
+nc?.pushViewController(legacyVC)       // UIKit controller
+
+// Pop with precision
+nc?.popTo(viewType: HomeView.self)     // Pop to specific view type
+await nc?.popToRootAsync()             // Await animation completion
 ```
 
-### 3. Pushing SwiftUI Views (Hybrid)
+---
 
-Use the `push(view:)` extension to push a SwiftUI view programmatically. This ensures the environment is propagated correctly.
+## 📦 Installation
 
-```swift
-nc?.push(view: DetailView(), title: "Detail")
-```
+### Swift Package Manager
 
-### 4. Popping to SwiftUI View (Hybrid)
-
-From a UIKit View Controller, you can pop back to a specific SwiftUI View type in the stack:
-
-```swift
-// Inside your UIViewController
-navigationController?.popTo(viewType: HomeView.self)
-```
-
-## Installation
-
-Add the package to your `Package.swift`:
+Add to your `Package.swift`:
 
 ```swift
 dependencies: [
@@ -78,11 +49,184 @@ dependencies: [
 ]
 ```
 
-## Requirements
+Or in Xcode: **File → Add Package Dependencies** → paste the URL.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Wrap Your Root View
+
+Replace `NavigationStack` with `NavigationStackX`:
+
+```swift
+import NavigationX
+
+struct ContentView: View {
+    var body: some View {
+        NavigationStackX {
+            HomeView()
+        }
+    }
+}
+```
+
+### 2. Access the Navigation Controller
+
+```swift
+struct HomeView: View {
+    @Environment(\.uiNavigationController) var nc
+    
+    var body: some View {
+        VStack {
+            Button("Push SwiftUI View") {
+                nc?.push(view: ProfileView(), title: "Profile")
+            }
+            
+            Button("Push UIKit Controller") {
+                let vc = LegacyViewController()
+                nc?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+}
+```
+
+### 3. Pop Back from UIKit
+
+```swift
+class LegacyViewController: UIViewController {
+    @objc func goBack() {
+        // Pop to a specific SwiftUI view type
+        navigationController?.popTo(viewType: HomeView.self)
+    }
+}
+```
+
+---
+
+## 🔥 Features
+
+### Async Navigation
+
+Navigate with structured concurrency:
+
+```swift
+// Wait for animations to complete
+await nc?.pushAsync(view: DetailView())
+await nc?.popViewControllerAsync(animated: true)
+await nc?.popToRootViewControllerAsync(animated: true)
+
+// Chain navigation operations
+Task {
+    await nc?.pushAsync(view: Step1View())
+    try await Task.sleep(for: .seconds(2))
+    await nc?.pushAsync(view: Step2View())
+}
+```
+
+### Navigator Observable Class
+
+Use the modern `@Observable` Navigator for reactive state:
+
+```swift
+@Environment(\.navigator) var navigator
+
+var body: some View {
+    VStack {
+        Text("Stack depth: \(navigator?.stackDepth ?? 0)")
+        
+        Button("Pop") {
+            navigator?.pop()
+        }
+        .disabled(!(navigator?.canPop ?? false))
+    }
+}
+```
+
+### Stack Inspection
+
+Query the navigation stack:
+
+```swift
+// Check if a view exists
+if nc?.contains(viewType: SettingsView.self) == true {
+    nc?.popTo(viewType: SettingsView.self)
+}
+
+// Find view index
+if let index = nc?.indexOf(viewType: ProfileView.self) {
+    print("Profile is at index \(index)")
+}
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    NavigationStackX                  │
+│  ┌───────────────────────────────────────────────┐  │
+│  │              NavigationStack                   │  │
+│  │  ┌─────────────────────────────────────────┐  │  │
+│  │  │           Your SwiftUI View              │  │  │
+│  │  │  @Environment(\.uiNavigationController)  │  │  │
+│  │  └─────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────┘  │
+│                        │                             │
+│              NavigationIntrospect                    │
+│                        │                             │
+│                        ▼                             │
+│              UINavigationController                  │
+│               (injected via Environment)             │
+└─────────────────────────────────────────────────────┘
+```
+
+**How it works:**
+1. `NavigationStackX` wraps the standard `NavigationStack`
+2. `NavigationIntrospect` finds the underlying `UINavigationController`
+3. The controller is injected into the SwiftUI `Environment`
+4. All child views can access it via `@Environment(\.uiNavigationController)`
+
+---
+
+## 📊 Comparison
+
+| Feature | NavigationX | Coordinators | SwiftUI Only |
+|---------|:-----------:|:------------:|:------------:|
+| Push UIKit VCs from SwiftUI | ✅ | ✅ | ❌ |
+| Pop to specific view type | ✅ | ✅ | ❌ |
+| Async navigation | ✅ | ⚠️ | ❌ |
+| Zero boilerplate | ✅ | ❌ | ✅ |
+| Stack inspection | ✅ | ✅ | ❌ |
+| Learning curve | Low | High | Low |
+| Lines of setup code | 1 | 50+ | 0 |
+
+---
+
+## 🧪 Testing
+
+```bash
+swift test
+```
+
+---
+
+## 📋 Requirements
 
 - iOS 16.0+
-- Swift 5.7+
+- Swift 6.2+
+- Xcode 16+
 
-## Architecture
+---
 
-`NavigationX` uses `NavigationIntrospect` to locate the `UINavigationController` hosting the `NavigationStack` and injects it into the SwiftUI `Environment`. It adds no other state management or side effects.
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  <strong>Made with ❤️ for the SwiftUI community</strong>
+</p>

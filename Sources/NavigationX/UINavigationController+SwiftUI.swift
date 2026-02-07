@@ -1,25 +1,83 @@
 import UIKit
 import SwiftUI
 
+// MARK: - Push Operations
+
 public extension UINavigationController {
     
-    // MARK: - Push SwiftUI View
-    
-    /// Pushes a SwiftUI View onto the receiver’s stack and updates the display.
+    /// Pushes a SwiftUI View onto the receiver's stack and updates the display.
     /// - Parameters:
     ///   - view: The SwiftUI View to push.
     ///   - title: Optional title for the hosting controller.
     ///   - animated: Set this value to true to animate the transition.
     func push<Content: View>(view: Content, title: String? = nil, animated: Bool = true) {
-        // We must inject the navigation controller into the environment of the new view,
-        // otherwise the new UIHostingController starts with a fresh environment (nc = nil).
         let viewWithEnv = view.environment(\.uiNavigationController, self)
         let hostingController = UIHostingController(rootView: viewWithEnv)
         hostingController.title = title
-        self.pushViewController(hostingController, animated: animated)
+        pushViewController(hostingController, animated: animated)
     }
     
-    // MARK: - Pop to SwiftUI View Type
+    /// Pushes a SwiftUI View and waits for the animation to complete.
+    /// - Parameters:
+    ///   - view: The SwiftUI View to push.
+    ///   - title: Optional title for the hosting controller.
+    ///   - animated: Set this value to true to animate the transition.
+    func pushAsync<Content: View>(view: Content, title: String? = nil, animated: Bool = true) async {
+        let viewWithEnv = view.environment(\.uiNavigationController, self)
+        let hostingController = UIHostingController(rootView: viewWithEnv)
+        hostingController.title = title
+        await pushViewControllerAsync(hostingController, animated: animated)
+    }
+    
+    /// Pushes a view controller and waits for the animation to complete.
+    func pushViewControllerAsync(_ viewController: UIViewController, animated: Bool) async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            CATransaction.begin()
+            CATransaction.setCompletionBlock {
+                continuation.resume()
+            }
+            pushViewController(viewController, animated: animated)
+            CATransaction.commit()
+        }
+    }
+}
+
+// MARK: - Pop Operations
+
+public extension UINavigationController {
+    
+    /// Pops the top view controller and waits for the animation to complete.
+    @discardableResult
+    func popViewControllerAsync(animated: Bool) async -> UIViewController? {
+        await withCheckedContinuation { continuation in
+            CATransaction.begin()
+            CATransaction.setCompletionBlock { [weak self] in
+                // Return what was popped (now gone from stack)
+                continuation.resume(returning: nil)
+            }
+            let popped = popViewController(animated: animated)
+            if popped == nil {
+                CATransaction.commit()
+                continuation.resume(returning: nil)
+                return
+            }
+            CATransaction.commit()
+        }
+    }
+    
+    /// Pops to the root view controller and waits for the animation to complete.
+    @discardableResult
+    func popToRootViewControllerAsync(animated: Bool) async -> [UIViewController]? {
+        await withCheckedContinuation { continuation in
+            CATransaction.begin()
+            var poppedControllers: [UIViewController]?
+            CATransaction.setCompletionBlock {
+                continuation.resume(returning: poppedControllers)
+            }
+            poppedControllers = popToRootViewController(animated: animated)
+            CATransaction.commit()
+        }
+    }
     
     /// Pops view controllers until the specified SwiftUI View type is at the top of the navigation stack.
     /// - Parameters:
@@ -28,31 +86,53 @@ public extension UINavigationController {
     /// - Returns: The array of popped view controllers, or nil if the view type was not found.
     @discardableResult
     func popTo<Content: View>(viewType: Content.Type, animated: Bool = true) -> [UIViewController]? {
-        // Iterate through the navigation stack in reverse order to find the *most recent* instance.
-        // Actually, popToViewController usually targets the *first* instance found from the bottom? 
-        // Standard behavior matches: find the VC in `viewControllers`.
+        let targetTypeName = String(describing: viewType)
         
-        print("🔍 [NavigationX] Searching for VC hosting: \(viewType)")
-        for (index, vc) in viewControllers.reversed().enumerated() {
+        for vc in viewControllers.reversed() {
             let vcTypeString = String(describing: type(of: vc))
-            print("   [\(index)] \(vcTypeString)")
             
-            // Check if it's a UIHostingController and contains the View type name in its generic signature.
-            // This handles ModifiedContent<View, ...> wrapping caused by environment injection.
-            if vcTypeString.contains("UIHostingController") && vcTypeString.contains(String(describing: viewType)) {
-                print("   ✅ Match found (via String check)!")
-                return self.popToViewController(vc, animated: animated)
+            if vcTypeString.contains("UIHostingController") && vcTypeString.contains(targetTypeName) {
+                return popToViewController(vc, animated: animated)
             }
         }
         
-        print("⚠️ [NavigationX] popTo failed: No hosting controller found for type \(String(describing: viewType))")
         return nil
     }
     
-    // MARK: - Check existence
+    /// Pops to a specific SwiftUI view type and waits for the animation to complete.
+    /// - Parameters:
+    ///   - viewType: The type of the SwiftUI View to find.
+    ///   - animated: Set this value to true to animate the transition.
+    /// - Returns: True if the view was found and popped to, false otherwise.
+    @discardableResult
+    func popToAsync<Content: View>(viewType: Content.Type, animated: Bool = true) async -> Bool {
+        let targetTypeName = String(describing: viewType)
+        
+        for vc in viewControllers.reversed() {
+            let vcTypeString = String(describing: type(of: vc))
+            
+            if vcTypeString.contains("UIHostingController") && vcTypeString.contains(targetTypeName) {
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    CATransaction.begin()
+                    CATransaction.setCompletionBlock {
+                        continuation.resume()
+                    }
+                    popToViewController(vc, animated: animated)
+                    CATransaction.commit()
+                }
+                return true
+            }
+        }
+        
+        return false
+    }
+}
+
+// MARK: - Query Operations
+
+public extension UINavigationController {
     
     /// Checks if a SwiftUI View of a specific type exists in the stack.
-    @MainActor
     func contains<Content: View>(viewType: Content.Type) -> Bool {
         let targetTypeName = String(describing: viewType)
         return viewControllers.contains { vc in
@@ -60,4 +140,14 @@ public extension UINavigationController {
             return vcTypeString.contains("UIHostingController") && vcTypeString.contains(targetTypeName)
         }
     }
+    
+    /// Returns the index of a SwiftUI View type in the stack, or nil if not found.
+    func indexOf<Content: View>(viewType: Content.Type) -> Int? {
+        let targetTypeName = String(describing: viewType)
+        return viewControllers.firstIndex { vc in
+            let vcTypeString = String(describing: type(of: vc))
+            return vcTypeString.contains("UIHostingController") && vcTypeString.contains(targetTypeName)
+        }
+    }
 }
+
